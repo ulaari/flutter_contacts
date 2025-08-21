@@ -11,13 +11,15 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
     static let FORM_OPERATION_CANCELED: Int = 1
     static let FORM_COULD_NOT_BE_OPEN: Int = 2
     
-    public static func register(with registrar: FlutterPluginRegistrar) {
-        let channel = FlutterMethodChannel(name: "github.com/clovisnicolas/flutter_contacts", binaryMessenger: registrar.messenger())
-        let rootViewController = UIApplication.shared.delegate!.window!!.rootViewController!;
-        let instance = SwiftContactsServicePlugin(rootViewController)
-        registrar.addMethodCallDelegate(instance, channel: channel)
-        instance.preLoadContactView()
-    }
+public static func register(with registrar: FlutterPluginRegistrar?) {
+       	guard let registrar = registrar else {
+        // Optionally log: NSLog("Nil registrar during FlutterContacts registration")
+           return
+        }
+        let messenger = registrar.messenger()
+        let api: ContactsHostApi & NSObjectProtocol = ContactsHostApiImpl(binaryMessenger: messenger)
+        ContactsHostApiSetup.setUp(binaryMessenger: messenger, api: api)
+}
 
     init(_ rootViewController: UIViewController) {
         self.rootViewController = rootViewController
